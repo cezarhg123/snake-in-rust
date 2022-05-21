@@ -2,6 +2,8 @@ use glium::glutin::{self, dpi::{Size, PhysicalSize}};
 use glium::Surface;
 
 pub mod vertex;
+pub mod utils;
+pub mod drawables;
 
 extern crate glium;
 
@@ -14,8 +16,11 @@ fn main() {
     let cb = glutin::ContextBuilder::new();
     let display = glium::Display::new(wb, cb, &event_loop).unwrap();
 
-    let mut prev_time = std::time::Instant::now();
+    let vertex_shader_src = utils::read_file("shaders/default.vert");
+    let fragment_shader_src = utils::read_file("shaders/default.frag");
+    let shader_program = glium::Program::from_source(&display, &vertex_shader_src, &fragment_shader_src, None);
 
+    let mut prev_time = std::time::Instant::now();
     event_loop.run(move |ev, _, control_flow| {
         let crnt_time = std::time::Instant::now();
         let next_frame_time = std::time::Instant::now() +
@@ -36,7 +41,7 @@ fn main() {
         if crnt_time - prev_time >= std::time::Duration::from_millis(10) {
             prev_time = std::time::Instant::now();
             let mut target = display.draw();
-            target.clear_color(0.0, 0.6, 1.0, 1.0);
+            target.clear_color(0.0, 0.0, 0.0, 1.0);
             target.finish().unwrap();
         }
     });
