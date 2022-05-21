@@ -1,9 +1,11 @@
+use drawable::Drawable;
 use glium::glutin::{self, dpi::{Size, PhysicalSize}};
 use glium::Surface;
 use vertex::Vertex;
 
 pub mod vertex;
 pub mod utils;
+pub mod drawable;
 
 extern crate glium;
 
@@ -20,33 +22,36 @@ fn main() {
     let vertex_shader_src = utils::read_file("shaders/default.vert");
     let fragment_shader_src = utils::read_file("shaders/default.frag");
     let shader_program = glium::Program::from_source(&display, &vertex_shader_src, &fragment_shader_src, None).unwrap();
+    
+    let mut test = Drawable {
+        vertices: std::vec!
+        [
+            Vertex {
+                position: (300, 300),
+                color: (1.0, 0.0, 0.0)
+            },
+    
+            Vertex {
+                position: (300, 200),
+                color: (0.0, 1.0, 0.0)
+            },
+    
+            Vertex {
+                position: (200, 200),
+                color: (0.0, 0.0, 1.0)
+            },
+    
+            Vertex {
+                position: (200, 300),
+                color: (1.0, 0.0, 1.0)
+            }
+        ],
+        indices: vec![0, 2, 1, 0, 3, 2],
+        vb: None,
+        eb: None
+    };
 
-    let square = 
-    std::vec!
-    [
-        Vertex {
-            position: (300, 300),
-            color: (1.0, 0.0, 0.0)
-        },
-
-        Vertex {
-            position: (300, 200),
-            color: (0.0, 1.0, 0.0)
-        },
-
-        Vertex {
-            position: (200, 200),
-            color: (0.0, 0.0, 1.0)
-        },
-
-        Vertex {
-            position: (200, 300),
-            color: (1.0, 0.0, 1.0)
-        }
-    ];
-    let vb = glium::VertexBuffer::new(&display, square.as_slice()).unwrap();
-    let indices:[u32; 6] = [0, 2, 1, 0, 3, 2];
-    let eb = glium::IndexBuffer::new(&display, glium::index::PrimitiveType::TrianglesList, &indices).unwrap();
+    test.gen_buffers(&display);
 
     let mut prev_time = std::time::Instant::now();
     //main loop
@@ -71,7 +76,7 @@ fn main() {
             prev_time = std::time::Instant::now();
             let mut target = display.draw();
             target.clear_color(0.0, 0.0, 0.0, 1.0);
-            target.draw(&vb, &eb, &shader_program, &glium::uniforms::EmptyUniforms, &Default::default()).unwrap();
+            target.draw(test.get_vb(), test.get_eb(), &shader_program, &glium::uniforms::EmptyUniforms, &Default::default()).unwrap();
             target.finish().unwrap();
         }
     });//main loop
