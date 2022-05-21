@@ -1,4 +1,4 @@
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Vertex {
     pub position: (i32, i32),
     pub color: (f32, f32, f32)
