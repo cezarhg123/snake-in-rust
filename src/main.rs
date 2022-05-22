@@ -1,10 +1,10 @@
-use drawable::Drawable;
 use glium::glutin::{self, dpi::{Size, PhysicalSize}};
 use glium::Surface;
 
 pub mod vertex;
 pub mod utils;
 pub mod drawable;
+pub mod game;
 
 extern crate glium;
 
@@ -21,9 +21,6 @@ fn main() {
     let vertex_shader_src = utils::read_file("shaders/default.vert");
     let fragment_shader_src = utils::read_file("shaders/default.frag");
     let shader_program = glium::Program::from_source(&display, &vertex_shader_src, &fragment_shader_src, None).unwrap();
-
-    let test = Drawable::new(&display, (0, 0), (1.0, 0.0, 1.0));
-    let test2 = Drawable::new(&display, (0, 80), (1.0, 1.0, 1.0));
 
     let mut prev_time = std::time::Instant::now();
     //main loop
@@ -48,8 +45,6 @@ fn main() {
             prev_time = std::time::Instant::now();
             let mut target = display.draw();
             target.clear_color(0.0, 0.0, 0.0, 1.0);
-            target.draw(test.get_vb(), test.get_eb(), &shader_program, &glium::uniforms::EmptyUniforms, &Default::default()).unwrap();
-            target.draw(test2.get_vb(), test2.get_eb(), &shader_program, &glium::uniforms::EmptyUniforms, &Default::default()).unwrap();
             target.finish().unwrap();
         }
     });//main loop
