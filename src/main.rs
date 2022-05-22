@@ -1,7 +1,6 @@
 use drawable::Drawable;
 use glium::glutin::{self, dpi::{Size, PhysicalSize}};
 use glium::Surface;
-use vertex::Vertex;
 
 pub mod vertex;
 pub mod utils;
@@ -15,43 +14,16 @@ fn main() {
     let mut wb = glutin::window::WindowBuilder::new();
     wb.window.resizable = false;
     wb.window.title = String::from("Snake with rust");
-    wb.window.inner_size = Some(Size::Physical(PhysicalSize::new(1280, 720)));
+    wb.window.inner_size = Some(Size::Physical(PhysicalSize::new(800, 800)));
     let cb = glutin::ContextBuilder::new();
     let display = glium::Display::new(wb, cb, &event_loop).unwrap();
 
     let vertex_shader_src = utils::read_file("shaders/default.vert");
     let fragment_shader_src = utils::read_file("shaders/default.frag");
     let shader_program = glium::Program::from_source(&display, &vertex_shader_src, &fragment_shader_src, None).unwrap();
-    
-    let mut test = Drawable {
-        vertices: std::vec!
-        [
-            Vertex {
-                position: (300, 300),
-                color: (1.0, 0.0, 0.0)
-            },
-    
-            Vertex {
-                position: (300, 200),
-                color: (0.0, 1.0, 0.0)
-            },
-    
-            Vertex {
-                position: (200, 200),
-                color: (0.0, 0.0, 1.0)
-            },
-    
-            Vertex {
-                position: (200, 300),
-                color: (1.0, 0.0, 1.0)
-            }
-        ],
-        indices: vec![0, 2, 1, 0, 3, 2],
-        vb: None,
-        eb: None
-    };
 
-    test.gen_buffers(&display);
+    let test = Drawable::new(&display, (0, 0), (1.0, 0.0, 1.0));
+    let test2 = Drawable::new(&display, (0, 80), (1.0, 1.0, 1.0));
 
     let mut prev_time = std::time::Instant::now();
     //main loop
@@ -77,6 +49,7 @@ fn main() {
             let mut target = display.draw();
             target.clear_color(0.0, 0.0, 0.0, 1.0);
             target.draw(test.get_vb(), test.get_eb(), &shader_program, &glium::uniforms::EmptyUniforms, &Default::default()).unwrap();
+            target.draw(test2.get_vb(), test2.get_eb(), &shader_program, &glium::uniforms::EmptyUniforms, &Default::default()).unwrap();
             target.finish().unwrap();
         }
     });//main loop

@@ -8,9 +8,10 @@ out vec3 Color;
 void main() {
     Color = color;
     vec2 pos;
-    pos.x = position.x / 640.0;
+    pos.x = position.x / 400.0;
     pos.x -= 1.0;
-    pos.y = position.y / 360.0;
-    pos.y -= 0.0;
+    pos.y = position.y / 400.0;
+    float loc = 2.0 - pos.y;
+    pos.y = loc - 1.0;
     gl_Position = vec4(pos, 0.0, 1.0);
 }
