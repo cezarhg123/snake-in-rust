@@ -37,6 +37,7 @@ pub fn draw_tiles(display: &dyn Facade, tiles: &Vec<Vec<Tile>>) -> Vec<Drawable>
 
             match &tile.entity {
                 Entity::NoEntity => {
+                    //debug only
                     drawables.push(Drawable::new(display, (posX, posY), (0.2, 0.2, 0.2)));
                 },
                 Entity::Apple => {
