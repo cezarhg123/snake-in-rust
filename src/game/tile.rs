@@ -11,9 +11,9 @@ pub enum Entity {
 
 #[derive(Clone, Copy)]
 pub struct Tile {
-    x: i32,
-    y: i32,
-    entity: Entity
+    pub x: i32,
+    pub y: i32,
+    pub entity: Entity
 }
 
 impl Tile {
@@ -38,7 +38,7 @@ pub fn draw_tiles(display: &dyn Facade, tiles: &Vec<Vec<Tile>>) -> Vec<Drawable>
             match &tile.entity {
                 Entity::NoEntity => {
                     //debug only
-                    drawables.push(Drawable::new(display, (posX, posY), (0.2, 0.2, 0.2)));
+                    //drawables.push(Drawable::new(display, (posX, posY), (0.2, 0.2, 0.2)));
                 },
                 Entity::Apple => {
                     drawables.push(Drawable::new(display, (posX, posY), (1.0, 0.0, 0.0)));

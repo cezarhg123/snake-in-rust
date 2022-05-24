@@ -1,5 +1,5 @@
-use game::tile::{Tile, draw_tiles, Entity};
-use glium::glutin::{self, dpi::{Size, PhysicalSize}};
+use game::{tile::{draw_tiles}, Game, Input};
+use glium::glutin::{self, dpi::{Size, PhysicalSize}, event::{ElementState, KeyboardInput, VirtualKeyCode}};
 use glium::Surface;
 
 pub mod vertex;
@@ -23,20 +23,16 @@ fn main() {
     let fragment_shader_src = utils::read_file("shaders/default.frag");
     let shader_program = glium::Program::from_source(&display, &vertex_shader_src, &fragment_shader_src, None).unwrap();
 
-    let mut tiles:Vec<Vec<Tile>> = Vec::new();
+    #[allow(unused_mut)]
+    let mut game = Game::new();
+    let mut input = Input::NoInput;
 
-    for x in 0..10 {
-        let mut temp_vec: Vec<Tile> = Vec::new();
-        for y in 0..10 {
-            temp_vec.push(Tile::new(x, y, Entity::NoEntity));
-        }
-        tiles.push(temp_vec);
-    }
-
-    let mut prev_time = std::time::Instant::now();
+    let mut prev_time_sync = std::time::Instant::now();
+    let mut prev_time_gametick = std::time::Instant::now();
     //main loop
     event_loop.run(move |ev, _, control_flow| {
-        let crnt_time = std::time::Instant::now();
+        let crnt_time_sync = std::time::Instant::now();
+        let crnt_time_gametick = std::time::Instant::now();
         let next_frame_time = std::time::Instant::now() +
             std::time::Duration::from_nanos(10000);
         *control_flow = glutin::event_loop::ControlFlow::WaitUntil(next_frame_time);
@@ -46,17 +42,37 @@ fn main() {
                     *control_flow = glutin::event_loop::ControlFlow::Exit;
                     return;
                 },
-                _ => return,
+                glutin::event::WindowEvent::KeyboardInput {
+                    input: KeyboardInput {virtual_keycode: Some(virtual_code), state, ..},
+                    ..
+                } => if input == Input::NoInput {
+                    match (virtual_code, state) {
+                    (VirtualKeyCode::Up, ElementState::Pressed) => input = Input::Up,
+                    (VirtualKeyCode::Down, ElementState::Pressed) => input = Input::Down,
+                    (VirtualKeyCode::Left, ElementState::Pressed) => input = Input::Left,
+                    (VirtualKeyCode::Right, ElementState::Pressed) => input = Input::Right,
+                    _ => {}
+                    }
+                },
+                _ => return
             },
             _ => (),
         }
 
+        //gametick (10 ticks a second)
+        if crnt_time_gametick - prev_time_gametick >= std::time::Duration::from_millis(100) {
+            prev_time_gametick = std::time::Instant::now();
+            game.change_direction(&mut input);
+
+            game.tick();
+        }
+
         //limits window refresh to 100 fps
-        if crnt_time - prev_time >= std::time::Duration::from_millis(10) {
-            prev_time = std::time::Instant::now();
+        if crnt_time_sync - prev_time_sync >= std::time::Duration::from_millis(10) {
+            prev_time_sync = std::time::Instant::now();
             let mut target = display.draw();
             target.clear_color(0.0, 0.0, 0.0, 1.0);
-            let tile_drawables = draw_tiles(&display, &tiles);
+            let tile_drawables = draw_tiles(&display, &game.tiles);
             for tile_drawable in tile_drawables.iter() {
                 target.draw(tile_drawable.get_vb(), tile_drawable.get_eb(), &shader_program, &glium::uniforms::EmptyUniforms, &Default::default()).unwrap();
             }
