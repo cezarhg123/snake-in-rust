@@ -2,7 +2,7 @@ use glium::backend::Facade;
 
 use crate::drawable::Drawable;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum Entity {
     NoEntity,
     Apple,

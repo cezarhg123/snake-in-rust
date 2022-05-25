@@ -60,7 +60,7 @@ fn main() {
         }
 
         //gametick (10 ticks a second)
-        if crnt_time_gametick - prev_time_gametick >= std::time::Duration::from_millis(100) {
+        if crnt_time_gametick - prev_time_gametick >= std::time::Duration::from_millis(200) {
             prev_time_gametick = std::time::Instant::now();
             game.change_direction(&mut input);
 
