@@ -1,3 +1,5 @@
+use std::process::exit;
+
 use rand::Rng;
 
 use crate::utils::{has_movement, get_movement_index};
@@ -139,8 +141,7 @@ impl Game {
             }
 
             if self.tiles[*x][*y].entity == Entity::Snake {
-                //feature
-                self.tiles[123][23].entity = Entity::NoEntity;
+                exit(0);
             }
 
             self.tiles[*x][*y] = Tile::new(self.head.0, self.head.1, Entity::Snake); 
